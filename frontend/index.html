@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Notes App</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      margin-top: 50px;
+      background: #f4f4f4;
+    }
+
+    input {
+      padding: 10px;
+      width: 250px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      background: #007bff;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    li {
+      background: white;
+      margin: 10px auto;
+      padding: 10px;
+      width: 300px;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📝 Notes App</h1>
+
+  <input id="noteInput" placeholder="Enter note..." />
+  <button onclick="addNote()">Add</button>
+
+  <ul id="notesList"></ul>
+
+  <script>
+    const API = "http://YOUR_AWS_BACKEND_URL";
+
+    async function fetchNotes() {
+      const res = await fetch(API + "/notes");
+      const data = await res.json();
+
+      const list = document.getElementById("notesList");
+      list.innerHTML = "";
+
+      data.forEach(note => {
+        const li = document.createElement("li");
+        li.innerText = note;
+        list.appendChild(li);
+      });
+    }
+
+    async function addNote() {
+      const input = document.getElementById("noteInput");
+
+      if (!input.value) return;
+
+      await fetch(API + "/notes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ note: input.value })
+      });
+
+      input.value = "";
+      fetchNotes();
+    }
+
+    fetchNotes();
+  </script>
+
+</body>
+</html>
